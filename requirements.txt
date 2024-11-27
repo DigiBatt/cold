@@ -1,0 +1,10 @@
+rdflib
+pydantic
+requests
+jinja2
+owlrl
+EMMOntoPy
+
+# Optional testing dependencies (not needed for production)
+pytest>=7.0.0   # Testing framework
+pytest-cov>=4.0.0   # Test coverage reporting
