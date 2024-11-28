@@ -11,7 +11,7 @@ import json
 
 try:
 
-    my_case = cold.R2032()
+    my_case = cold.CoinCase()
     my_case.hasProperty = [
         cold.Diameter(0.02, "Metre"),
         cold.Thickness(0.0032, "Metre")
