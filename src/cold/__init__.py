@@ -17,8 +17,8 @@ Usage:
 """
 
 # Ontology Handling
-from .ontology.formatter import format_ontology_ttl
-from .ontology.importer import import_ontology_turtle
+from .ontology.formatter import format_ontology
+from .ontology.importer import import_ontology
 from .ontology.loader import load_ontology
 from .ontology.extractor import (
     extract_classes,
@@ -41,8 +41,8 @@ __email__ = "your.email@example.com"
 
 # Public API
 __all__ = [
-    "format_ontology_ttl",
-    "import_ontology_turtle",
+    "format_ontology",
+    "import_ontology",
     "load_ontology",
     "extract_classes",
     "extract_properties",

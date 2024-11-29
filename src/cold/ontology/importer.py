@@ -1,7 +1,7 @@
 import requests
 
 
-def import_ontology_turtle(url, local_file_path):
+def import_ontology(url, local_file_path):
     """
     Downloads a Turtle file from a given URL and saves it locally.
 

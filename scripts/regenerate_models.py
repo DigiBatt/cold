@@ -6,10 +6,10 @@ import json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 print(sys.path)
 
-from cold.ontology.importer import import_ontology_turtle
+from cold.ontology.importer import import_ontology
 from cold.ontology.loader import load_ontology
 from cold.ontology.extractor import extract_classes
-from cold.ontology.formatter import format_ontology_ttl
+from cold.ontology.formatter import format_ontology
 from cold.models.generator import generate_pydantic_classes
 from cold.utils.access import *
 
@@ -30,12 +30,16 @@ def main():
         original_file_name = url_dict.get(url_key).get("original_file_name")
         formatted_file_name = url_dict.get(url_key).get("formatted_file_name")
 
-        original_file_path = os.path.join(get_path_to_ontology_files_originals(),original_file_name)
-        formatted_file_path = os.path.join(get_path_to_ontology_files_formatted(),formatted_file_name)
+        original_file_path = os.path.join(
+            get_path_to_ontology_files_originals(), original_file_name
+        )
+        formatted_file_path = os.path.join(
+            get_path_to_ontology_files_formatted(), formatted_file_name
+        )
 
-        import_ontology_turtle(url, original_file_path)
+        import_ontology(url, original_file_path)
 
-        format_ontology_ttl(original_file_path, formatted_file_path)
+        format_ontology(original_file_path, formatted_file_path)
 
         ontology = load_ontology(formatted_file_path)
 

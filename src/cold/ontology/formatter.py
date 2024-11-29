@@ -1,7 +1,7 @@
 from rdflib import Graph, Namespace, RDF, RDFS, SKOS, OWL
 
 
-def format_ontology_ttl(input_turtle, output_turtle):
+def format_ontology(input_turtle, output_turtle):
     """
     Updates a Turtle file by changing all `:class` prefixes to `owl`
     and replacing `rdfs:label` with `skos:prefLabel`.
