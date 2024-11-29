@@ -3,7 +3,8 @@ from jinja2 import Template
 from .customizations import customizations
 from ..ontology.extractor import extract_properties, get_parent_classes
 from ..utils.sanitizers import sanitize_module_name
-from ..utils.helpers import extract_label
+from ..utils.helpers import extract_label, get_prefLabel
+
 
 def generate_pydantic_classes(classes, template_path, output_dir, max_classes=None):
     """
@@ -23,7 +24,6 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
     os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
     generated_classes = []  # Keep track of all generated class names and sanitized names
 
-    
     # Generate explicitly defined top-level classes in customizations
     for class_name, customization in customizations.items():
         context = {
@@ -32,7 +32,7 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
             "parent_classes": customization.get("parent_classes", ["BaseModel"]),
             "methods": customization.get("methods", []),
             "custom_models": custom_models,
-            "imports": []  # Custom classes may not need additional imports
+            "imports": [],  # Custom classes may not need additional imports
         }
 
         # Render and write the template
@@ -40,7 +40,9 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
         write_class_file(output_dir, class_name, class_code)
         generated_classes.append((class_name, sanitize_module_name(class_name)))
 
-        print(f"Generated top-level Pydantic class: {class_name} (sanitized as {sanitize_module_name(class_name)}Module)")
+        print(
+            f"Generated top-level Pydantic class: {class_name} (sanitized as {sanitize_module_name(class_name)}Module)"
+        )
 
     # Generate ontology-based classes
     for idx, cls in enumerate(classes):
@@ -50,12 +52,12 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
 
         try:
             # Extract class metadata
-            raw_pref_label = cls.prefLabel[0] if hasattr(cls, "prefLabel") and cls.prefLabel else None
+            # raw_pref_label = cls.prefLabel[0] if hasattr(cls, "prefLabel") and cls.prefLabel else None
+            raw_pref_label = get_prefLabel(cls, None)
+
             class_name = extract_label(raw_pref_label) if raw_pref_label else "UnnamedClass"
 
-        
-
-            #class_name = cls.prefLabel[0]
+            # class_name = cls.prefLabel[0]
             sanitized_name = sanitize_module_name(class_name)
             properties, dependencies = extract_properties(cls)
 
@@ -72,16 +74,16 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
             # Apply customizations
             context = apply_customizations(class_name, context)
 
-            #print(context)
+            # print(context)
 
             # Render and write the template
             class_code = render_class(context, template)
             write_class_file(output_dir, class_name, class_code)
             generated_classes.append((class_name, sanitized_name))
 
-            #print(f"Generated Pydantic class: {class_name} (sanitized as {sanitized_name}Module)")
+            # print(f"Generated Pydantic class: {class_name} (sanitized as {sanitized_name}Module)")
         except Exception as e:
-            #print(f"Error generating class for '{getattr(cls, 'prefLabel', ['Unknown'])[0]}': {e}")
+            # print(f"Error generating class for '{getattr(cls, 'prefLabel', ['Unknown'])[0]}': {e}")
             continue
 
     # Generate __init__.py for lazy loading
@@ -118,6 +120,7 @@ def write_class_file(output_dir, class_name, class_code):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(class_code)
 
+
 def apply_customizations(class_name, context):
     """
     Apply customizations to a class based on its name.
@@ -141,13 +144,15 @@ def apply_customizations(class_name, context):
         # Add properties if specified
         if "properties" in custom:
             for prop in custom["properties"]:
-                context["properties"].append({
-                    "name": prop["name"],
-                    "range": prop.get("range", "str"),
-                    "alias": prop.get("alias", prop["name"]),
-                    "default": prop.get("default", None),  # Default is None if not specified
-                    "exclude": prop.get("exclude", False),  # Handle exclude for serialization
-                })
+                context["properties"].append(
+                    {
+                        "name": prop["name"],
+                        "range": prop.get("range", "str"),
+                        "alias": prop.get("alias", prop["name"]),
+                        "default": prop.get("default", None),  # Default is None if not specified
+                        "exclude": prop.get("exclude", False),  # Handle exclude for serialization
+                    }
+                )
 
         # Add custom imports if specified
         if "imports" in custom:
@@ -177,7 +182,8 @@ def generate_lazy_init(output_dir, generated_classes):
         f.write("]\n\n")
 
         # Add lazy loading logic
-        f.write("""
+        f.write(
+            """
 import importlib
 
 def __getattr__(name):
@@ -185,4 +191,5 @@ def __getattr__(name):
         module = importlib.import_module(f".{name}Module", package=__name__)
         return getattr(module, name)
     raise AttributeError(f"module {__name__} has no attribute {name}")
-""")
+"""
+        )

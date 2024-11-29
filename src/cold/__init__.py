@@ -17,14 +17,22 @@ Usage:
 """
 
 # Ontology Handling
+from .ontology.formatter import format_ontology_ttl
+from .ontology.importer import import_ontology_turtle
 from .ontology.loader import load_ontology
-from .ontology.extractor import extract_classes, extract_properties, get_parent_classes
+from .ontology.extractor import (
+    extract_classes,
+    extract_properties,
+    get_parent_classes,
+)
 
 # Model Generation
 from .models.generator import generate_pydantic_classes
 
 # Utilities
 from .utils.sanitizers import sanitize_module_name
+from .utils.helpers import get_prefLabel, extract_label
+from .utils.access import *
 
 # Package Metadata
 __version__ = "0.1.0"
@@ -33,6 +41,8 @@ __email__ = "your.email@example.com"
 
 # Public API
 __all__ = [
+    "format_ontology_ttl",
+    "import_ontology_turtle",
     "load_ontology",
     "extract_classes",
     "extract_properties",
