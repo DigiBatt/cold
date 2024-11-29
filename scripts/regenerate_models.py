@@ -30,8 +30,8 @@ def main():
         original_file_name = url_dict.get(url_key).get("original_file_name")
         formatted_file_name = url_dict.get(url_key).get("formatted_file_name")
 
-        original_file_path = get_path_to_ontology_files_originals() + original_file_name
-        formatted_file_path = get_path_to_ontology_files_formatted() + formatted_file_name
+        original_file_path = os.path.join(get_path_to_ontology_files_originals(),original_file_name)
+        formatted_file_path = os.path.join(get_path_to_ontology_files_formatted(),formatted_file_name)
 
         import_ontology_turtle(url, original_file_path)
 
