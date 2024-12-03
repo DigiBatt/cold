@@ -16,8 +16,9 @@ try:
         cold.Diameter(0.02, "Metre"),
         cold.Thickness(0.0032, "Metre")
     ]   
-    cell = cold.CR2032(hasCase=my_case)
+    cell = cold.ElectrochemicalCell(hasCase=my_case)
     cell.hasProperty = cold.Diameter(0.02, "Metre")
+    cell.hasPositiveElectrode = cold.PositiveElectrode()
 
     # Print the validated model
     print("Validated ElectrochemicalDevice:")

@@ -60,4 +60,16 @@ def custom_method(self):
 """
         ]
     },
+    "Electrode": {
+        "properties": [
+            {"name": "hasCoating", "range": "Coating", "alias": "hasCoating"},
+            {"name": "hasCurrentCollector", "range": "CurrentCollector", "alias": "hasCurrentCollector"}
+        ]
+    },
+    "ElectrochemicalCell": {
+        "properties": [
+            {"name": "hasPositiveElectrode", "range": "Electrode", "alias": "hasPositiveElectrode"},
+            {"name": "hasNegativeElectrode", "range": "Electrode", "alias": "hasNegativeElectrode"}
+        ]
+    }
 }
