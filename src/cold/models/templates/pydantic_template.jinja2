@@ -23,6 +23,32 @@ from .{{ imp }}Module import {{ imp }}
 {% endif %}
 
 class {{ class_name }}({{ ', '.join(parent_classes) }}):
+    """
+    Class representing the `{{ class_name }}` entity, which inherits from:
+    - {{ ', '.join(parent_classes) }}
+
+    This class defines the following attributes:
+    {% if properties %}
+    {% for prop in properties %}
+    - `{{ prop.name }}` (`Optional[{{ prop.range }}]`): 
+        - **Default Value**: `{{ prop.default if 'default' in prop else 'None' }}`
+        - **Alias**: `{{ prop.alias if 'alias' in prop else prop.name }}`
+    {% endfor %}
+    {% endif %}
+
+    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
+    
+    Example usage:
+    ```python
+    obj = {{ class_name }}(
+    {% for prop in properties %}
+    {{ prop.name }}={{ prop.default if 'default' in prop else '"example_value"' }},
+    {% endfor %}
+    ```
+
+    Methods:
+    - The class may include custom validation and transformation methods as needed.
+    """
     {% if properties %}
     {% for prop in properties %}
     {{ prop.name }}: Optional[{{ prop.range }}] = Field(
