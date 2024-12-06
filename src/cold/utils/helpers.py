@@ -16,3 +16,13 @@ def extract_label(value):
         return value['@value']
     # Otherwise, return the string representation
     return str(value)
+
+
+def get_prefLabel(cls, else_):
+    if hasattr(cls, "prefLabel") and cls.prefLabel:
+        label = cls.prefLabel[0]
+    elif hasattr(cls, "get_preferred_label") and cls.get_preferred_label != None:
+        label = cls.get_preferred_label()
+    else:
+        label = else_
+    return label
