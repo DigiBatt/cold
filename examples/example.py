@@ -16,8 +16,13 @@ try:
         cold.Diameter(0.02, "Metre"),
         cold.Thickness(0.0032, "Metre")
     ]   
-    cell = cold.CR2032(hasCase=my_case)
+    # Serialize to JSON-LD
+    json_ld = my_case.to_jsonld()
+    print(json.dumps(json_ld, indent=4))
+
+    cell = cold.ElectrochemicalDevice(hasCase=my_case)
     cell.hasProperty = cold.Diameter(0.02, "Metre")
+    cell.hasPositiveElectrode = cold.PositiveElectrode()
 
     # Print the validated model
     print("Validated ElectrochemicalDevice:")
