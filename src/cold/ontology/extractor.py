@@ -1,9 +1,5 @@
 from cold.utils.sanitizers import sanitize_module_name
-from cold.utils.helpers import extract_label, get_prefLabel
-
-
-from rdflib import RDF, RDFS, OWL
-
+from cold.utils.helpers import extract_label
 
 def extract_classes(ontology, allowed_classes=None, max_classes=None):
     """Extract classes from the ontology."""
@@ -11,16 +7,13 @@ def extract_classes(ontology, allowed_classes=None, max_classes=None):
 
     if allowed_classes is None:
         print("No allowed_classes specified. Extracting all classes from the ontology...")
-
         for cls in ontology.classes():
-
-            class_name = get_prefLabel(cls, "")
+            class_name = cls.prefLabel[0] if hasattr(cls, "prefLabel") and cls.prefLabel else ""
             # Skip classes starting with a number
             if class_name and class_name[0].isdigit():
                 print(f"Skipping class '{class_name}' because it starts with a number.")
                 continue
             ontology_classes.append(cls)
-
     else:
         for class_name in allowed_classes:
             # Skip classes starting with a number
@@ -41,70 +34,74 @@ def extract_classes(ontology, allowed_classes=None, max_classes=None):
 
 from ..utils.helpers import extract_label
 
-
-def extract_properties(cls):
-    """Extract properties of a class."""
+def extract_properties(cls, visited=None):
+    """Extract properties of a class, ensuring no infinite recursion."""
+    if visited is None:
+        visited = set()  # Initialize visited set to prevent infinite loops
+        
     properties = []
     dependencies = []  # Collect classes mentioned in the range for imports
 
     # Add fixed `class_iri` and `class_name` properties
     iri_value = getattr(cls, "iri", None)
     if iri_value:
-        properties.append(
-            {
-                "name": "class_iri",
-                "range": "str",
-                "default": repr(iri_value),  # Use repr to preserve string formatting
-            }
-        )
+        properties.append({
+            "name": "class_iri",
+            "range": "str",
+            "default": repr(iri_value),  # Use repr to preserve string formatting
+        })
 
     # Extract and convert the prefLabel to a plain string
-    name_value = get_prefLabel(cls, None)
-
-    # name_value = getattr(cls, "prefLabel", [None])[0]
+    name_value = getattr(cls, "prefLabel", [None])[0]
     if name_value:
         plain_name = extract_label(name_value)  # Convert locstr to plain string
-
-        properties.append(
-            {
-                "name": "class_name",
-                "range": "str",
-                "default": repr(plain_name),  # Use plain string here
-            }
-        )
+        properties.append({
+            "name": "class_name",
+            "range": "str",
+            "default": repr(plain_name),  # Use plain string here
+        })
 
     for prop in cls.get_class_properties():
         try:
-
-            # if not prop.prefLabel or not prop.prefLabel[0]:
-            #     if not prop.get_preferred_label:
-            #         continue
+            # Skip properties without a prefLabel
+            if not hasattr(prop, "prefLabel") or not prop.prefLabel or not prop.prefLabel[0]:
+                continue
 
             # Extract and sanitize the property name
-            raw_pref_label = get_prefLabel(prop, "")
-
+            raw_pref_label = prop.prefLabel[0]
             sanitized_name = sanitize_module_name(extract_label(raw_pref_label))
-            sanitized_range = "str"  # Default range to str
-            if prop.range and isinstance(prop.range, (list, tuple)) and len(prop.range) > 0:
-                range_item = prop.range[0]
-                range_value = get_prefLabel(range_item, None) if range_item else None
-                # range_value = getattr(range_item, "prefLabel", [None])[0] if range_item else None
-                if range_value:
-                    sanitized_range = sanitize_module_name(extract_label(range_value))
-                    # Add to dependencies with the Module suffix
-                    dependencies.append(f"{sanitized_range}Module")
+            sanitized_range = "str"  # Default range to 'str'
 
-            properties.append(
-                {
-                    "name": sanitized_name,
-                    "range": sanitized_range,
-                }
-            )
+            # Access the class-specific property using the sanitized name
+            class_prop = getattr(cls, sanitized_name, None)
+
+            if class_prop:
+                # Handle restrictions or literals
+                if hasattr(class_prop[0], "prefLabel") and class_prop[0].prefLabel:
+                    # If the property has a prefLabel, use it
+                    range_label = class_prop[0].prefLabel[0]
+                    sanitized_range = sanitize_module_name(extract_label(range_label))
+                    dependencies.append(f"{sanitized_range}Module")
+                elif hasattr(class_prop[0], "value"):
+                    # If the property is a literal, use the value
+                    sanitized_range = str(class_prop[0].value)
+                else:
+                    # Default to 'str' if no prefLabel or literal is found
+                    sanitized_range = "str"
+
+            # Append the property with its resolved range
+            properties.append({
+                "name": sanitized_name,
+                "range": sanitized_range,
+            })
+
         except Exception as e:
             print(f"Error processing property '{getattr(prop, 'prefLabel', ['Unknown'])[0]}': {e}")
             continue
 
+
     return properties, list(set(dependencies))  # Return unique dependencies
+
 
 
 def get_parent_classes(cls):
@@ -112,8 +109,7 @@ def get_parent_classes(cls):
     parent_classes = []
     if cls.is_a:
         for parent in cls.is_a:
-            label = get_prefLabel(parent, None)
-            if label:
-                parent_classes.append(extract_label(label))
+            if hasattr(parent, "prefLabel") and parent.prefLabel:
+                parent_classes.append(extract_label(parent.prefLabel[0]))
 
     return parent_classes if parent_classes else ["LinkedDataModel"]  # Default to BaseModel
