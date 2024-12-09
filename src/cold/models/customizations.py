@@ -81,15 +81,13 @@ def custom_method(self):
         "methods": [
             """
     @root_validator(pre=True)
-        def set_defaults(cls, values):
-            values["hasNegativeElectrode"] = values.get("hasNegativeElectrode", LithiumElectrode())
-            values["hasPositiveElectrode"] = values.get("hasPositiveElectrode", ManganeseDioxideElectrode())
-            values["hasProperty"] = values.get("hasProperty", [
-                Diameter(0.020, "Metre"),
-                Thickness(0.0032, "Metre")
-            ])
+    def set_defaults(cls, values):
+        values["hasProperty"] = values.get("hasProperty", [
+            Diameter(0.020, "Metre"),
+            Thickness(0.0032, "Metre")
+        ])
 
-            return values
+        return values
 """
         ]
     }

@@ -1,8 +1,58 @@
 {
-"emmo_battery": {
-    "url": "https://emmo-repo.github.io/domain-battery/battery-inferred.ttl",
-    "original_file_name": "emmo_battery.ttl",
-    "formatted_file_name": "emmo_battery_formatted.ttl"
-}
-    
-}
+    "emmo_battery": {
+        "url": "https://emmo-repo.github.io/domain-battery/battery-inferred.ttl",
+        "original_file_name": "emmo_battery.ttl",
+        "formatted_file_name": "emmo_battery_formatted.ttl"
+    },
+    "sidimensionalunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/sidimensionalunits.ttl",
+        "original_file_name": "sidimensionalunits.ttl",
+        "formatted_file_name": "sidimensionalunits_formatted.ttl"
+    },
+    "siunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/siunits.ttl",
+        "original_file_name": "siunits.ttl",
+        "formatted_file_name": "siunits_formatted.ttl"
+    },
+    "prefixedsiunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/prefixedsiunits.ttl",
+        "original_file_name": "prefixedsiunits.ttl",
+        "formatted_file_name": "prefixedsiunits_formatted.ttl"
+    },
+    "coherentsiunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/coherentsiunits.ttl",
+        "original_file_name": "coherentsiunits.ttl",
+        "formatted_file_name": "coherentsiunits_formatted.ttl"
+    },
+    "noncoherentsiunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/noncoherentsiunits.ttl",
+        "original_file_name": "noncoherentsiunits.ttl",
+        "formatted_file_name": "noncoherentsiunits_formatted.ttl"
+    },
+    "siacceptedspecialunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/siacceptedspecialunits.ttl",
+        "original_file_name": "siacceptedspecialunits.ttl",
+        "formatted_file_name": "siacceptedspecialunits_formatted.ttl"
+    },
+    "siacceptedunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/siacceptedunits.ttl",
+        "original_file_name": "siacceptedunits.ttl",
+        "formatted_file_name": "siacceptedunits_formatted.ttl"
+    },
+    "specialunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/specialunits.ttl",
+        "original_file_name": "specialunits.ttl",
+        "formatted_file_name": "specialunits_formatted.ttl"
+    },
+    "unclassifiedunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/unclassifiedunits.ttl",
+        "original_file_name": "unclassifiedunits.ttl",
+        "formatted_file_name": "unclassifiedunits_formatted.ttl"
+    },
+    "otherunits":{
+        "url": "https://raw.githubusercontent.com/emmo-repo/EMMO/1.0.0-rc1/disciplines/units/otherunits.ttl",
+        "original_file_name": "otherunits.ttl",
+        "formatted_file_name": "otherunits_formatted.ttl"
+    }
+        
+    }
