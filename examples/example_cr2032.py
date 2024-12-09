@@ -13,8 +13,6 @@ try:
 
     my_cr2032 = cold.CR2032()
 
-    print(my_cr2032)
-
     # Serialize to JSON-LD
     json_ld = my_cr2032.to_jsonld()
     print(json.dumps(json_ld, indent=4))
