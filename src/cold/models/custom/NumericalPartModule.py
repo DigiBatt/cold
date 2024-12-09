@@ -21,7 +21,7 @@ class NumericalPart(Real):
         
     )
     
-    hasNumericalValue: Optional[Union[int, float]] = Field(
+    hasNumericalValue: Optional[Union[float]] = Field(
         None,
         alias="hasNumericalValue",
         
