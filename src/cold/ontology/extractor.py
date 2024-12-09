@@ -34,8 +34,11 @@ def extract_classes(ontology, allowed_classes=None, max_classes=None):
 
 from ..utils.helpers import extract_label
 
-def extract_properties(cls):
-    """Extract properties of a class."""
+def extract_properties(cls, visited=None):
+    """Extract properties of a class, ensuring no infinite recursion."""
+    if visited is None:
+        visited = set()  # Initialize visited set to prevent infinite loops
+        
     properties = []
     dependencies = []  # Collect classes mentioned in the range for imports
 
@@ -60,28 +63,42 @@ def extract_properties(cls):
 
     for prop in cls.get_class_properties():
         try:
-            if not prop.prefLabel or not prop.prefLabel[0]:
+            # Skip properties without a prefLabel
+            if not hasattr(prop, "prefLabel") or not prop.prefLabel or not prop.prefLabel[0]:
                 continue
 
             # Extract and sanitize the property name
             raw_pref_label = prop.prefLabel[0]
             sanitized_name = sanitize_module_name(extract_label(raw_pref_label))
-            sanitized_range = "str"  # Default range to str
-            if prop.range and isinstance(prop.range, (list, tuple)) and len(prop.range) > 0:
-                range_item = prop.range[0]
-                range_value = getattr(range_item, "prefLabel", [None])[0] if range_item else None
-                if range_value:
-                    sanitized_range = sanitize_module_name(extract_label(range_value))
-                    # Add to dependencies with the Module suffix
-                    dependencies.append(f"{sanitized_range}Module")
+            sanitized_range = "str"  # Default range to 'str'
 
+            # Access the class-specific property using the sanitized name
+            class_prop = getattr(cls, sanitized_name, None)
+
+            if class_prop:
+                # Handle restrictions or literals
+                if hasattr(class_prop[0], "prefLabel") and class_prop[0].prefLabel:
+                    # If the property has a prefLabel, use it
+                    range_label = class_prop[0].prefLabel[0]
+                    sanitized_range = sanitize_module_name(extract_label(range_label))
+                    dependencies.append(f"{sanitized_range}Module")
+                elif hasattr(class_prop[0], "value"):
+                    # If the property is a literal, use the value
+                    sanitized_range = str(class_prop[0].value)
+                else:
+                    # Default to 'str' if no prefLabel or literal is found
+                    sanitized_range = "str"
+
+            # Append the property with its resolved range
             properties.append({
                 "name": sanitized_name,
                 "range": sanitized_range,
             })
+
         except Exception as e:
             print(f"Error processing property '{getattr(prop, 'prefLabel', ['Unknown'])[0]}': {e}")
             continue
+
 
     return properties, list(set(dependencies))  # Return unique dependencies
 
@@ -96,6 +113,3 @@ def get_parent_classes(cls):
                 parent_classes.append(extract_label(parent.prefLabel[0]))
 
     return parent_classes if parent_classes else ["LinkedDataModel"]  # Default to BaseModel
-
-
-

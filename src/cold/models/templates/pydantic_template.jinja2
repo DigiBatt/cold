@@ -19,17 +19,26 @@ from .{{ imp }}Module import {{ imp }}
 {% endfor %}
 
 {% if additional_imports %}
-{{ additional_imports | join('\\n') }}
+# Custom imports
+{% for imp in additional_imports %}
+{{ imp }}
+{% endfor %}
 {% endif %}
+
 
 class {{ class_name }}({{ ', '.join(parent_classes) }}):
     {% if properties %}
     {% for prop in properties %}
     {{ prop.name }}: Optional[{{ prop.range }}] = Field(
-        {{ prop.default if 'default' in prop else 'None' }},
+        {% if prop.default %}
+            {{ prop.default }},
+        {% else %}
+            None,
+        {% endif %}
         alias="{{ prop.alias if 'alias' in prop else prop.name }}"
     )
     {% endfor %}
+
 
     {% for prop in properties if prop.range not in ["str", "Union[int, float]", "int", "float"] %}
     @validator("{{ prop.name }}", pre=True, always=True)
