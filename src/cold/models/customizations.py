@@ -71,5 +71,11 @@ def custom_method(self):
             {"name": "hasPositiveElectrode", "range": "Electrode", "alias": "hasPositiveElectrode"},
             {"name": "hasNegativeElectrode", "range": "Electrode", "alias": "hasNegativeElectrode"}
         ]
-    }
+    },
+    "Workflow": {
+        "imports": [],
+        "properties": [
+            {"name": "hasTask", "range": "Task", "alias": "hasTask"}
+        ]
+    },
 }
