@@ -45,7 +45,7 @@ def main():
   
     # Ensure required directories exist
     ensure_directories_exist(REQUIRED_DIRECTORIES)
-
+    print(get_path_to_ontology())
     # Import ontology urls from json
     with open(os.path.join(get_path_to_ontology(), "urls.json"), 'r') as f:
         url_dict = json.load(f)

@@ -16,14 +16,17 @@ def get_path_to_cold():
     path = os.path.dirname(get_path_to_utils())
     return path
 
-
 def get_path_to_ontology():
     path = os.path.join(get_path_to_cold(), "ontology")
     return path
 
+def get_path_to_models_ontology():
+    path = os.path.join(get_path_to_cold(), "models", "ontology")
+    return path
+
 
 def get_path_to_ontology_files():
-    path = os.path.join(get_path_to_ontology(), "files")
+    path = os.path.join(get_path_to_models_ontology(), "files")
     return path
 
 
