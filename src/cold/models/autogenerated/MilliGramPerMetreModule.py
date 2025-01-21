@@ -1,0 +1,185 @@
+
+from pydantic import BaseModel, Field, validator, root_validator
+from typing import Optional, List, Union
+
+
+
+from .MassPerLengthUnitModule import MassPerLengthUnit
+
+
+
+from .SINonCoherentUnitModule import SINonCoherentUnit
+
+
+
+from .MilliPrefixedUnitModule import MilliPrefixedUnit
+
+
+
+from .PrefixedUnitModule import PrefixedUnit
+
+
+
+
+
+from .GramPerMetreModule import GramPerMetre
+
+
+
+
+
+
+class MilliGramPerMetre(MassPerLengthUnit, SINonCoherentUnit, MilliPrefixedUnit, PrefixedUnit):
+    """
+    Class representing the `MilliGramPerMetre` entity, which inherits from:
+    - MassPerLengthUnit, SINonCoherentUnit, MilliPrefixedUnit, PrefixedUnit
+
+    This class defines the following attributes:
+    
+    
+    - `class_iri` (`Optional[str]`): 
+        - **Default Value**: `'https://w3id.org/emmo#MilliGramPerMetre'`
+        - **Alias**: `class_iri`
+    
+    - `class_name` (`Optional[str]`): 
+        - **Default Value**: `'MilliGramPerMetre'`
+        - **Alias**: `class_name`
+    
+    - `hasUnitSymbol` (`Optional[GramPerMetre]`): 
+        - **Default Value**: `None`
+        - **Alias**: `hasUnitSymbol`
+    
+    - `qudtReference` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `qudtReference`
+    
+    - `hasSIConversionMultiplier` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `hasSIConversionMultiplier`
+    
+    - `unitSymbol` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `unitSymbol`
+    
+    - `hasSIConversionOffset` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `hasSIConversionOffset`
+    
+    - `elucidation` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `elucidation`
+    
+    - `ucumCode` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `ucumCode`
+    
+    
+
+    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
+    
+    Example usage:
+    ```python
+    obj = MilliGramPerMetre(
+    
+    class_iri='https://w3id.org/emmo#MilliGramPerMetre',
+    
+    class_name='MilliGramPerMetre',
+    
+    hasUnitSymbol="example_value",
+    
+    qudtReference="example_value",
+    
+    hasSIConversionMultiplier="example_value",
+    
+    unitSymbol="example_value",
+    
+    hasSIConversionOffset="example_value",
+    
+    elucidation="example_value",
+    
+    ucumCode="example_value",
+    
+    ```
+
+    Methods:
+    - The class may include custom validation and transformation methods as needed.
+    """
+    
+    
+    class_iri: Optional[str] = Field(
+        
+            'https://w3id.org/emmo#MilliGramPerMetre',
+        
+        alias="class_iri"
+    )
+    
+    class_name: Optional[str] = Field(
+        
+            'MilliGramPerMetre',
+        
+        alias="class_name"
+    )
+    
+    hasUnitSymbol: Optional[GramPerMetre] = Field(
+        
+            None,
+        
+        alias="hasUnitSymbol"
+    )
+    
+    qudtReference: Optional[str] = Field(
+        
+            None,
+        
+        alias="qudtReference"
+    )
+    
+    hasSIConversionMultiplier: Optional[str] = Field(
+        
+            None,
+        
+        alias="hasSIConversionMultiplier"
+    )
+    
+    unitSymbol: Optional[str] = Field(
+        
+            None,
+        
+        alias="unitSymbol"
+    )
+    
+    hasSIConversionOffset: Optional[str] = Field(
+        
+            None,
+        
+        alias="hasSIConversionOffset"
+    )
+    
+    elucidation: Optional[str] = Field(
+        
+            None,
+        
+        alias="elucidation"
+    )
+    
+    ucumCode: Optional[str] = Field(
+        
+            None,
+        
+        alias="ucumCode"
+    )
+    
+
+
+    
+    @validator("hasUnitSymbol", pre=True, always=True)
+    def validate_hasUnitSymbol(cls, value):
+        if value is not None and not isinstance(value, GramPerMetre):
+            raise ValueError(f"Field 'hasUnitSymbol' must be an instance of 'GramPerMetre' or its subclass.")
+        return value
+    
+    
+
+    
+
+    

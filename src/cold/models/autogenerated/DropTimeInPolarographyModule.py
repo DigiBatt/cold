@@ -1,0 +1,92 @@
+
+from pydantic import BaseModel, Field, validator
+from typing import Optional, List, Union
+
+
+
+from .DurationModule import Duration
+
+
+
+from .ElectrochemicalQuantityModule import ElectrochemicalQuantity
+
+
+
+
+
+
+
+class DropTimeInPolarography(Duration, ElectrochemicalQuantity):
+    """
+    Class representing the `DropTimeInPolarography` entity, which inherits from:
+    - Duration, ElectrochemicalQuantity
+
+    This class defines the following attributes:
+    
+    
+    - `class_iri` (`Optional[str]`): 
+        - **Default Value**: `'https://w3id.org/emmo/domain/electrochemistry#electrochemistry_4b18c3f9_df10_4259_adb4_cd10842ff0be'`
+        - **Alias**: `class_iri`
+    
+    - `class_name` (`Optional[str]`): 
+        - **Default Value**: `'DropTimeInPolarography'`
+        - **Alias**: `class_name`
+    
+    - `iupacReference` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `iupacReference`
+    
+    - `elucidation` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `elucidation`
+    
+    
+
+    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
+    
+    Example usage:
+    ```python
+    obj = DropTimeInPolarography(
+    
+    class_iri='https://w3id.org/emmo/domain/electrochemistry#electrochemistry_4b18c3f9_df10_4259_adb4_cd10842ff0be',
+    
+    class_name='DropTimeInPolarography',
+    
+    iupacReference="example_value",
+    
+    elucidation="example_value",
+    
+    ```
+
+    Methods:
+    - The class may include custom validation and transformation methods as needed.
+    """
+    
+    
+    class_iri: Optional[str] = Field(
+        'https://w3id.org/emmo/domain/electrochemistry#electrochemistry_4b18c3f9_df10_4259_adb4_cd10842ff0be',
+        alias="class_iri"
+    )
+    
+    class_name: Optional[str] = Field(
+        'DropTimeInPolarography',
+        alias="class_name"
+    )
+    
+    iupacReference: Optional[str] = Field(
+        None,
+        alias="iupacReference"
+    )
+    
+    elucidation: Optional[str] = Field(
+        None,
+        alias="elucidation"
+    )
+    
+
+    
+    
+
+    
+
+    

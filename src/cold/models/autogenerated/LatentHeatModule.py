@@ -1,0 +1,92 @@
+
+from pydantic import BaseModel, Field, validator
+from typing import Optional, List, Union
+
+
+
+from .HeatModule import Heat
+
+
+
+from .ThermodynamicalQuantityModule import ThermodynamicalQuantity
+
+
+
+
+
+
+
+class LatentHeat(Heat, ThermodynamicalQuantity):
+    """
+    Class representing the `LatentHeat` entity, which inherits from:
+    - Heat, ThermodynamicalQuantity
+
+    This class defines the following attributes:
+    
+    
+    - `class_iri` (`Optional[str]`): 
+        - **Default Value**: `'https://w3id.org/emmo#EMMO_fb1e757e_087e_4541_847f_392990643f64'`
+        - **Alias**: `class_iri`
+    
+    - `class_name` (`Optional[str]`): 
+        - **Default Value**: `'LatentHeat'`
+        - **Alias**: `class_name`
+    
+    - `wikidataReference` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `wikidataReference`
+    
+    - `ISO80000Reference` (`Optional[str]`): 
+        - **Default Value**: `None`
+        - **Alias**: `ISO80000Reference`
+    
+    
+
+    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
+    
+    Example usage:
+    ```python
+    obj = LatentHeat(
+    
+    class_iri='https://w3id.org/emmo#EMMO_fb1e757e_087e_4541_847f_392990643f64',
+    
+    class_name='LatentHeat',
+    
+    wikidataReference="example_value",
+    
+    ISO80000Reference="example_value",
+    
+    ```
+
+    Methods:
+    - The class may include custom validation and transformation methods as needed.
+    """
+    
+    
+    class_iri: Optional[str] = Field(
+        'https://w3id.org/emmo#EMMO_fb1e757e_087e_4541_847f_392990643f64',
+        alias="class_iri"
+    )
+    
+    class_name: Optional[str] = Field(
+        'LatentHeat',
+        alias="class_name"
+    )
+    
+    wikidataReference: Optional[str] = Field(
+        None,
+        alias="wikidataReference"
+    )
+    
+    ISO80000Reference: Optional[str] = Field(
+        None,
+        alias="ISO80000Reference"
+    )
+    
+
+    
+    
+
+    
+
+    

@@ -1,0 +1,66 @@
+
+from pydantic import BaseModel, Field, validator
+from typing import Optional, List, Union
+
+
+
+from .FormingFromLiquidModule import FormingFromLiquid
+
+
+
+
+
+
+
+class GrowingCrystal(FormingFromLiquid):
+    """
+    Class representing the `GrowingCrystal` entity, which inherits from:
+    - FormingFromLiquid
+
+    This class defines the following attributes:
+    
+    
+    - `class_iri` (`Optional[str]`): 
+        - **Default Value**: `'https://w3id.org/emmo#EMMO_662e94ea_babe_4709_af8f_b669931076bc'`
+        - **Alias**: `class_iri`
+    
+    - `class_name` (`Optional[str]`): 
+        - **Default Value**: `'GrowingCrystal'`
+        - **Alias**: `class_name`
+    
+    
+
+    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
+    
+    Example usage:
+    ```python
+    obj = GrowingCrystal(
+    
+    class_iri='https://w3id.org/emmo#EMMO_662e94ea_babe_4709_af8f_b669931076bc',
+    
+    class_name='GrowingCrystal',
+    
+    ```
+
+    Methods:
+    - The class may include custom validation and transformation methods as needed.
+    """
+    
+    
+    class_iri: Optional[str] = Field(
+        'https://w3id.org/emmo#EMMO_662e94ea_babe_4709_af8f_b669931076bc',
+        alias="class_iri"
+    )
+    
+    class_name: Optional[str] = Field(
+        'GrowingCrystal',
+        alias="class_name"
+    )
+    
+
+    
+    
+
+    
+
+    
