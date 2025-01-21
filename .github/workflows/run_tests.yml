@@ -26,4 +26,4 @@ jobs:
 
     - name: Run activation protocol
       run: |
-        pytest  tests\test_models\test_activation_protocol.py # Run pytest to execute your tests
+        pytest  tests/test_models/test_activation_protocol.py # Run pytest to execute your tests
