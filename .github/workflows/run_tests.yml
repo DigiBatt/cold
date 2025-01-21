@@ -21,9 +21,13 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Install dependencies from your requirements file
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
 
     - name: Run activation protocol
       run: |
-        pytest  tests/test_models/test_activation_protocol.py # Run pytest to execute your tests
+        source venv/bin/activate
+        cd tests/test_models
+        pytest  test_activation_protocol.py # Run pytest to execute your tests
