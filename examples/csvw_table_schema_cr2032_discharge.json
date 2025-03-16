@@ -1,0 +1,129 @@
+{
+    "@context": "https://w3id.org/emmo/domain/battery/context",
+    "@type": "csvw:TableSchema",
+    "@id": "https://w3id.org/emmo/application/cr2032#",
+    "dc:identifier": "https://doi.org/10.1234/example.doi",
+    "dc:title": "MnO2-primary-cell(CR2032) constant current Discharge",
+    "dc:description": "A table schema describing csv file containing CR2032's discharge data",
+    "dc:subject": ["battery", "CR2032", "Discharge"],
+    "dc:language": "en",
+    "dc:license": {
+        "@id": "https://spdx.org/licenses/MIT.html"
+    },
+    "dc:accessRights": "public",
+    "dc:publisher": {
+        "@type": "schema:ResearchOrganization",
+        "@id": "https://ror.org/01f677e56",
+        "schema:name": "SINTEF AS"
+    },
+    "dc:creator": {
+        "@type": "schema:Person",
+        "@id": "https://orcid.org/0000-0002-8758-6109",
+        "schema:name": "Simon Clark",
+        "schema:affiliation": {
+            "@type": "schema:ResearchOrganization",
+            "@id": "https://ror.org/01f677e56",
+            "schema:name": "SINTEF"
+        }
+    },
+    "dc:modified": {
+        "@value": "2025-03-16",
+        "@type": "xsd:date"
+    },
+    "dc:created": {
+        "@value": "2024-03-16",
+        "@type": "xsd:date"
+    },
+    "dc:hasVersion": "1.0.0",
+    "dc:format": "application/ld+json",
+    "schema:name": "MnO2-primary-cell(CR2032) constant current Discharge",
+    "schema:description": "A table schema describing csv file containing CR2032's discharge data",
+    "schema:version": "1.0.0",
+    "schema:contactPoint": {
+        "@type": "schema:ContactPoint",
+        "schema:contactType": "creator",
+        "schema:email": "mailto:simon.clark@sintef.no"
+    },
+    "schema:encodingFormat": "application/ld+json",
+    "csvw:columns": [
+      {
+        "@type": "csvw:Column",
+        "csvw:name": "time/s",
+        "csvw:titles": "time/s",
+        "csvw:propertyUrl": {
+          "@type": "TestTime"
+        },
+        "hasMeasurementUnit": [
+          {
+            "@id": "emmo:Second"
+          },
+          {
+            "@id": "unit:SEC"
+          }
+        ],
+        "schema:unitCode": [
+          {
+            "@id": "emmo:Second"
+          },
+          {
+            "@id": "unit:SEC"
+          }
+        ],
+        "csvw:datatype": "xsd:decimal",
+        "csvw:required": "true"
+      },
+      {
+        "@type": "csvw:Column",
+        "csvw:name": "<I>/mA",
+        "csvw:titles": "Current / A",
+        "csvw:propertyUrl": {
+          "@type": "CellCurrent"
+        },
+        "hasMeasurementUnit": [
+          {
+            "@id": "emmo:milliAmpere"
+          },
+          {
+            "@id": "unit:mA"
+          }
+        ],
+        "schema:unitCode": [
+          {
+            "@id": "emmo:milliAmpere"
+          },
+          {
+            "@id": "unit:mA"
+          }
+        ],
+        "csvw:datatype": "xsd:decimal",
+        "csvw:required": "true"
+      },
+      {
+        "@type": "csvw:Column",
+        "csvw:name": "Ewe/V",
+        "csvw:titles": "Voltage / V",
+        "csvw:propertyUrl": {
+          "@type": "CellVoltage"
+        },
+        "hasMeasurementUnit": [
+          {
+            "@id": "emmo:Volt"
+          },
+          {
+            "@id": "unit:V"
+          }
+        ],
+        "schema:unitCode": [
+          {
+            "@id": "emmo:Volt"
+          },
+          {
+            "@id": "unit:V"
+          }
+        ],
+        "csvw:datatype": "xsd:decimal",
+        "csvw:required": "true"
+      }
+    ]
+  }
+  
