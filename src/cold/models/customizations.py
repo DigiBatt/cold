@@ -11,11 +11,6 @@ def custom_method(self):
 """
         ]
     },
-    "ElectrochemicalDevice": {
-        "properties": [
-            {"name": "custom_feature", "range": "str", "alias": "customFeature"}
-        ]
-    },
     "MeasurementUnit": {
         "imports": [
             "import importlib"
@@ -49,9 +44,9 @@ def custom_method(self):
         "methods": [
             """
     def __init__(self, value: float, unit: str, **kwargs):
-        \"\"\"Override __init__ for simplified instantiation.\"\"\" 
-        # Dynamically create a MeasurementUnit instance 
-        unit_instance = MeasurementUnit.from_class_name(unit) 
+        \"\"\"Override __init__ for simplified instantiation.\"\"\"
+        # Dynamically create a MeasurementUnit instance
+        unit_instance = MeasurementUnit.from_class_name(unit)
         super().__init__(
             hasNumericalPart=NumericalPart(hasNumericalValue=value),
             hasMeasurementUnit=unit_instance,
@@ -78,4 +73,28 @@ def custom_method(self):
             {"name": "hasTask", "range": "Task", "alias": "hasTask"}
         ]
     },
+    "CR2032": {
+        "imports": [
+            "from .DiameterModule import Diameter",
+            "from .ThicknessModule import Thickness"
+        ],
+        "instantiated_defaults": [
+            "hasNegativeElectrode",
+            "hasPositiveElectrode",
+            "hasCase",
+            "hasElectrolyte"
+        ],
+        "methods": [
+            """
+    @root_validator(pre=True)
+    def set_defaults(cls, values):
+        values["hasProperty"] = values.get("hasProperty", [
+            Diameter(0.020, "Metre"),
+            Thickness(0.0032, "Metre")
+        ])
+
+        return values
+"""
+        ]
+    }
 }

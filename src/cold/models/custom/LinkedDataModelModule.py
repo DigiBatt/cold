@@ -10,10 +10,6 @@ class LinkedDataModel(BaseModel):
     hasProperty: Optional[List[BaseModel]] = Field(default_factory=list)
 
     class Config:
-        populate_by_name = True
-
-
-    class Config:
         populate_by_name = True  # Enable alias population during instantiation
 
     def to_jsonld(self, include_context=True) -> dict:
