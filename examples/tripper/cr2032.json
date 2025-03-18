@@ -1,0 +1,68 @@
+{
+    "@context": [
+        "https://w3id.org/emmo/domain/battery/context",
+        {
+            "ex": "http://example.com/data#",
+            "dc": "http://purl.org/dc/terms/"
+        }
+    ],
+    "@graph": [
+        {
+            "@id": "ex:data-20250318",
+            "@type": "dcat:Dataset",
+            "dc:title": "MnO2-primary-cell(CR2032) constant current Discharge",
+            "dc:description": "A table schema describing csv file containing CR2032's discharge data",
+            "csvw:dialect": {
+                "@type": "csvw:Dialect",
+                "csvw:skipRows": 0,
+                "csvw:delimiter": ","
+            },
+            "csvw:url": "https://raw.githubusercontent.com/DigiBatt/cold/cold_tripper_demo_case/MnO2-primary-cell-12mA_CB2.csv",
+            "csvw:tableSchema": "https://raw.githubusercontent.com/DigiBatt/cold/cold_tripper_demo_case/csvw_table_schema_cr2032_discharge.json"
+        },
+        {
+            "@id": "ex:ecell-20250318",
+            "@type": "ElectrochemicalCell",
+            "wikidataReference": "https://www.wikidata.org/wiki/Q5013811",
+            "hasElectrolyte": {
+                "@type": "OrganicElectrolyte"
+            },
+            "dc:provider": {
+                "dc:name": "Sridevi Krishnamurthi"
+            },
+            "hasPositiveElectrode": {
+                "@type": "CoatedElectrode",
+                "hasCoating": {
+                    "@type": "ElectrodeCoating",
+                    "hasBinder": {
+                        "@type": "PolyvinylideneFluoride"
+                    },
+                    "hasActiveMaterial": {
+                        "@type": "ManganeseDioxide",
+                        "hasProperty": [
+                            {
+                                "@type": "Voltage",
+                                "hasNumericalPart": {
+                                    "@type": "Real",
+                                    "hasNumericalValue": 5.5e-06
+                                },
+                                "hasMeasurementUnit": {
+                                    "@type": "Volt"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "hasNegativeElectrode": {
+                "@type": "CoatedElectrode",
+                "hasCoating": {
+                    "@type": "ElectrodeCoating",
+                    "hasActiveMaterial": {
+                        "@type": "Lithium"
+                    }
+                }
+            }
+        }
+    ]
+}
