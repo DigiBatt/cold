@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name="cold",
     version="0.1.0",
-    package_dir={"": "src"},
-    packages=find_packages(where="src"),
+    package_dir={"": "cold"},
+    packages=find_packages(where="cold"),
     install_requires=[
         "pydantic",  # Add your dependencies here
         "jinja2",
