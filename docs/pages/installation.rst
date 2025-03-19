@@ -1,0 +1,3 @@
+Installation
+==========
+An about page

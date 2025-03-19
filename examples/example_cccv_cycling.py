@@ -24,7 +24,7 @@ try:
     resting.hasProcessParameter = cold.Duration(1, "Hour")
     resting.identifier = "id1"
     discharging.hasProcessParameter = [
-        cold.DischargingCRate(1, "C"),
+        cold.DischargingCRate(1, "AmperePerAmpereHour"),
         cold.LowerVoltageLimit(3, "Volt")
     ]
     discharging.identifier = "id2"

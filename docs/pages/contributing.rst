@@ -1,0 +1,3 @@
+Contributing
+============
+A contributing page
