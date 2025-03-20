@@ -1,4 +1,7 @@
 # COLD: Constructing Ontology-based Linked Data
+
+<img src="docs/assets/img/cold_logo.png" alt="cold-logo" width="100%">
+
 COLD is a Python package for generating and validating battery-related linked data. It provides tools for structuring battery metadata and test data into RDF/JSON-LD formats using an ontology-driven approach. cold ensures that generated data adheres to well-defined ontologies, making it easy to integrate with semantic web technologies and battery digital twin ecosystems.
 
 ## Features
