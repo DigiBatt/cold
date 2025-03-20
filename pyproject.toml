@@ -29,6 +29,7 @@ docs = [
     "Sphinx>=7.2,<9",
     "pydata-sphinx-theme==0.16.1",
     "nbsphinx",
+    "sphinx_design"
     "sphinx-copybutton",
     "beautifulsoup4>=4.12,<5",
     "Babel>=2.14,<3",
