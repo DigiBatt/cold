@@ -7,27 +7,46 @@ name = "cold"
 version = "0.1.0"
 description = "A Python package for working with battery ontologies."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
-    "pydantic",
-    "jinja2",
-    "rdflib",
-    "requests",
-    "owlrl",
-    "EMMOntoPy"
+    "pydantic>=2.0,<3",
+    "jinja2>=3.1,<4",
+    "rdflib>=6.0,<7",
+    "requests>=2.31,<3",
+    "owlrl>=6.0,<7",
+    "EMMOntoPy>=0.4.0,<1"
 ]
 
-[optional-dependencies]
+[project.optional-dependencies]
 dev = [
-    "pytest",
-    "black",
-    "isort",
-    "mypy"
+    "pytest>=7.0,<9",
+    "black>=23.0,<25",
+    "isort>=5.0,<6",
+    "mypy>=1.0,<2"
+]
+
+docs = [
+    "Sphinx>=7.2,<9",
+    "pydata-sphinx-theme==0.16.1",
+    "nbsphinx",
+    "sphinx_design",
+    "sphinx-copybutton",
+    "beautifulsoup4>=4.12,<5",
+    "Babel>=2.14,<3",
+    "snowballstemmer>=2.2,<3",
+    "docutils>=0.19,<1",
+    "imagesize>=1.4,<2",
+    "EMMOntoPy>=0.4.0,<1",
+    "rdflib>=6.0,<7",
+    "owlrl>=6.0,<7",
+    "PyYAML>=6.0,<7",
+    "pyld>=2.0,<3",
+    "Markdown>=3.4,<4",
+    "pandoc"
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["cold*"]
 
 [project.scripts]
 generate_models = "cold.scripts.regenerate_models:main"
