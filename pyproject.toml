@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cold"
+version = "0.1.0"
+description = "A Python package for working with battery ontologies."
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "pydantic",
+    "jinja2",
+    "rdflib",
+    "requests",
+    "owlrl",
+    "EMMOntoPy"
+]
+
+[optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+    "mypy"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cold*"]
+
+[project.scripts]
+generate_models = "cold.scripts.regenerate_models:main"
+
+[project.urls]
+Homepage = "https://github.com/DigiBatt/cold"
+Repository = "https://github.com/DigiBatt/cold"
+Issues = "https://github.com/DigiBatt/cold/issues"
