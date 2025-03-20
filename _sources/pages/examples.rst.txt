@@ -1,0 +1,4 @@
+
+Examples
+========
+An examples page
