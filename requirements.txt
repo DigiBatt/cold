@@ -1,6 +1,6 @@
 rdflib
 pydantic
-pydantic-schemaorg
+#pydantic-schemaorg
 requests
 jinja2
 owlrl

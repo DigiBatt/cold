@@ -1,0 +1,98 @@
+{% set imports = properties | map(attribute="range") | unique | reject("equalto", "str") | reject("equalto", None) | list %}
+from pydantic import BaseModel, Field, validator, root_validator
+from typing import Optional, List, Union
+
+{% for parent_class in parent_classes if parent_class != "BaseModel" %}
+{% if parent_class in custom_models %}
+from ..custom.{{ parent_class }}Module import {{ parent_class }}
+{% else %}
+from .{{ parent_class }}Module import {{ parent_class }}
+{% endif %}
+{% endfor %}
+
+{% for imp in imports %}
+{% if imp in custom_models %}
+from ..custom.{{ imp }}Module import {{ imp }}
+{% else %}
+from .{{ imp }}Module import {{ imp }}
+{% endif %}
+{% endfor %}
+
+{% if additional_imports %}
+# Custom imports
+{% for imp in additional_imports %}
+{{ imp }}
+{% endfor %}
+{% endif %}
+
+
+class {{ class_name }}({{ ', '.join(parent_classes) }}):
+    """
+    Class representing the `{{ class_name }}` entity, which inherits from:
+    - {{ ', '.join(parent_classes) }}
+
+    This class defines the following attributes:
+    {% if properties %}
+    {% for prop in properties %}
+    - `{{ prop.name }}` (`Optional[{{ prop.range }}]`): 
+        - **Default Value**: `{{ prop.default if 'default' in prop else 'None' }}`
+        - **Alias**: `{{ prop.alias if 'alias' in prop else prop.name }}`
+    {% endfor %}
+    {% endif %}
+
+    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
+    
+    Example usage:
+    ```python
+    obj = {{ class_name }}(
+    {% for prop in properties %}
+    {{ prop.name }}={{ prop.default if 'default' in prop else '"example_value"' }},
+    {% endfor %}
+    ```
+
+    Methods:
+    - The class may include custom validation and transformation methods as needed.
+    """
+    class Config:
+        arbitrary_types_allowed = True
+        populate_by_name = True
+        validate_assignment = True
+
+    {% if properties %}
+    {% for prop in properties %}
+    {{ prop.name }}: Optional[Union[{{ prop.range }}, List[{{ prop.range }}]]] = Field(
+        {% if prop.default %}
+            {{ prop.default }},
+        {% else %}
+            None,
+        {% endif %}
+        alias="{{ prop.alias if 'alias' in prop else prop.name }}"
+    )
+    {% endfor %}
+
+
+    {% for prop in properties if prop.range not in ["str", "Union[int, float]", "int", "float"] %}
+    @validator("{{ prop.name }}", pre=False, always=True)
+    def validate_{{ prop.name }}(cls, value):
+        if value is None:
+            return value
+        if isinstance(value, list):
+            for item in value:
+                if not isinstance(item, {{ prop.range }}):
+                    raise ValueError(f"Each item in '{{ prop.name }}' must be an instance of '{{ prop.range }}'.")
+            return value
+        if isinstance(value, {{ prop.range }}):
+            return value
+        raise ValueError(f"Field '{{ prop.name }}' must be '{{ prop.range }}' or a list of '{{ prop.range }}' instances.")
+    {% endfor %}
+    {% endif %}
+
+    {% if methods %}
+    {% for method in methods %}
+    {{ method | safe }}
+    {% endfor %}
+    {% endif %}
+
+    {% if not properties and not methods %}
+    pass
+    {% endif %}
