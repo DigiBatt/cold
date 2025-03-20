@@ -17,7 +17,7 @@ dependencies = [
     "EMMOntoPy>=0.4.0,<1"
 ]
 
-[optional-dependencies]
+[project.optional-dependencies]
 dev = [
     "pytest>=7.0,<9",
     "black>=23.0,<25",
