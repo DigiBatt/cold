@@ -58,8 +58,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'BattInfo'
-copyright = '2021-2023'
+project = 'COLD'
+copyright = '2024-2025'
 author = 'Simon Clark'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -164,12 +164,12 @@ html_css_files = ["custom.css"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'assets/img/battinfologo.jpg'
+html_logo = 'assets/img/cold_logo.jpg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = 'assets/img/battinfologo.ico'
+html_favicon = 'assets/img/cold_icon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
