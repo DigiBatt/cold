@@ -1,22 +1,24 @@
 {% set imports = properties | map(attribute="range") | unique | reject("equalto", "str") | reject("equalto", None) | list %}
+
 from pydantic import BaseModel, Field, validator, root_validator
 from typing import Optional, List, Union
 
 {% for parent_class in parent_classes if parent_class != "BaseModel" %}
 {% if parent_class in custom_models %}
-from ..custom.{{ parent_class }}__{{ prefix }} import {{ parent_class }}
+from cold.models.custom.{{ parent_class }}Module import {{ parent_class }}
 {% else %}
-from .{{ parent_class }}__{{ prefix }} import {{ parent_class }}
+from .{{ parent_class }}Module import {{ parent_class }}
 {% endif %}
 {% endfor %}
 
 {% for imp in imports %}
 {% if imp in custom_models %}
-from ..custom.{{ imp }}__{{ prefix }} import {{ imp }}
+from cold.models.custom.{{ imp }}Module import {{ imp }}
 {% else %}
-from .{{ imp }}__{{ prefix }} import {{ imp }}
+from .{{ imp }}Module import {{ imp }}
 {% endif %}
 {% endfor %}
+
 
 {% if additional_imports %}
 # Custom imports
@@ -41,13 +43,14 @@ class {{ class_name }}({{ ', '.join(parent_classes) }}):
     {% endif %}
 
     Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
-    
+
     Example usage:
     ```python
     obj = {{ class_name }}(
     {% for prop in properties %}
     {{ prop.name }}={{ prop.default if 'default' in prop else '"example_value"' }},
     {% endfor %}
+    )
     ```
 
     Methods:

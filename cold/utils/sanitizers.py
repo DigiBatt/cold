@@ -1,13 +1,16 @@
 import re
+import keyword
+
+_PYTHON_KEYWORDS = set(keyword.kwlist)
 
 def sanitize_module_name(name: str) -> str:
     """
     Sanitize a string to make it a valid Python module name.
 
-    - Replaces leading digits with an underscore (`_`).
-    - Converts invalid characters to underscores.
-    - Strips leading and trailing whitespace.
-    - Ensures the name doesn't conflict with Python keywords.
+    - Replaces spaces and dashes with underscores.
+    - Prefixes with 'N_' if it starts with a digit.
+    - Replaces other invalid characters with underscores.
+    - Ensures the name does not conflict with Python keywords.
 
     Args:
         name (str): The original name to sanitize.
@@ -15,17 +18,22 @@ def sanitize_module_name(name: str) -> str:
     Returns:
         str: The sanitized module name.
     """
-    # Replace leading digits with an underscore
-    name = re.sub(r'^\d', '_', name)
+    # Basic normalization
+    sanitized = name.replace("-", "_").replace(" ", "_").strip()
 
-    # Replace invalid characters with underscores
-    name = re.sub(r'\W|^(?=\d)', '_', name.strip())
+    # Replace non-alphanumeric characters with underscores
+    sanitized = re.sub(r'\W', '_', sanitized)
 
-    # Ensure the name is not a Python keyword
-    if name in _PYTHON_KEYWORDS:
-        name = f"{name}_keyword"
+    # Prefix with 'N_' if it starts with a digit
+    if sanitized and sanitized[0].isdigit():
+        sanitized = f"N_{sanitized}"
 
-    return name
+    # Avoid Python keywords
+    if sanitized in _PYTHON_KEYWORDS:
+        sanitized = f"{sanitized}_keyword"
+
+    return sanitized
+
 
 
 def is_valid_identifier(name: str) -> bool:

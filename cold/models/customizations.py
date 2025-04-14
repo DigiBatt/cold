@@ -106,5 +106,8 @@ def custom_method(self):
     "ParticulateMatter": {
         "exclude_parent_classes": ["BondedParticle"],
     },
-    "IGNORE": ["IUPACName"]
+    "Fluid": {
+        "exclude_parent_classes": ["StateOfMatter"],
+    },
+    "IGNORE": ["IUPACName", "AngularWavenumber", "FermiAngularWaveNumber"]
 }
