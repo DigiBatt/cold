@@ -31,76 +31,108 @@ def extract_classes(ontology, allowed_classes=None, max_classes=None):
         return ontology_classes[:max_classes]
     return ontology_classes
 
-
+from owlready2 import Restriction
 from ..utils.helpers import extract_label
+from cold.utils.sanitizers import sanitize_module_name
 
 def extract_properties(cls, visited=None):
-    """Extract properties of a class, ensuring no infinite recursion."""
     if visited is None:
-        visited = set()  # Initialize visited set to prevent infinite loops
-        
-    properties = []
-    dependencies = []  # Collect classes mentioned in the range for imports
+        visited = set()
 
-    # Add fixed `class_iri` and `class_name` properties
+    properties = []
+    dependencies = []
+    seen_property_names = set()
+
+    # Add fixed metadata
     iri_value = getattr(cls, "iri", None)
     if iri_value:
         properties.append({
             "name": "class_iri",
             "range": "str",
-            "default": repr(iri_value),  # Use repr to preserve string formatting
+            "default": repr(iri_value),
+            "iri": str(iri_value)
         })
+        seen_property_names.add("class_iri")
 
-    # Extract and convert the prefLabel to a plain string
     name_value = getattr(cls, "prefLabel", [None])[0]
     if name_value:
-        plain_name = extract_label(name_value)  # Convert locstr to plain string
+        plain_name = extract_label(name_value)
         properties.append({
             "name": "class_name",
             "range": "str",
-            "default": repr(plain_name),  # Use plain string here
+            "default": repr(plain_name),
+            "iri": None
         })
+        seen_property_names.add("class_name")
 
+    # --- Handle owl:Restrictions (EMMO + schema.org) ---
+    for parent in cls.is_a:
+        if hasattr(parent, "property") and (hasattr(parent, "some_values_from") or hasattr(parent, "all_values_from")):
+            try:
+                prop = parent.property
+                prop_name = sanitize_module_name(getattr(prop, "name", "unknown_property"))
+                if prop_name in seen_property_names:
+                    continue
+
+                range_type = "str"
+                range_cls = parent.some_values_from or parent.all_values_from
+                range_iri = getattr(range_cls, "iri", None)
+
+                if range_cls:
+                    if hasattr(range_cls, "prefLabel") and range_cls.prefLabel:
+                        range_type = sanitize_module_name(extract_label(range_cls.prefLabel[0]))
+                        dependencies.append(f"{range_type}Module")
+                    elif hasattr(range_cls, "name"):
+                        range_type = sanitize_module_name(range_cls.name)
+                    elif range_iri:
+                        range_type = sanitize_module_name(range_iri.split("/")[-1])
+
+                properties.append({
+                    "name": prop_name,
+                    "range": range_type,
+                    "iri": str(getattr(prop, "iri", ""))
+                })
+                seen_property_names.add(prop_name)
+
+            except Exception as e:
+                print(f"Warning: failed to process restriction in class '{cls.name}': {e}")
+                continue
+
+    # --- Handle normal class properties (EMMO-style) ---
     for prop in cls.get_class_properties():
         try:
-            # Skip properties without a prefLabel
             if not hasattr(prop, "prefLabel") or not prop.prefLabel or not prop.prefLabel[0]:
                 continue
 
-            # Extract and sanitize the property name
             raw_pref_label = prop.prefLabel[0]
             sanitized_name = sanitize_module_name(extract_label(raw_pref_label))
-            sanitized_range = "str"  # Default range to 'str'
+            if sanitized_name in seen_property_names:
+                continue
 
-            # Access the class-specific property using the sanitized name
+            sanitized_range = "str"
             class_prop = getattr(cls, sanitized_name, None)
 
             if class_prop:
-                # Handle restrictions or literals
                 if hasattr(class_prop[0], "prefLabel") and class_prop[0].prefLabel:
-                    # If the property has a prefLabel, use it
                     range_label = class_prop[0].prefLabel[0]
                     sanitized_range = sanitize_module_name(extract_label(range_label))
                     dependencies.append(f"{sanitized_range}Module")
                 elif hasattr(class_prop[0], "value"):
-                    # If the property is a literal, use the value
                     sanitized_range = str(class_prop[0].value)
-                else:
-                    # Default to 'str' if no prefLabel or literal is found
-                    sanitized_range = "str"
 
-            # Append the property with its resolved range
             properties.append({
                 "name": sanitized_name,
                 "range": sanitized_range,
+                "iri": str(getattr(prop, "iri", ""))
             })
+            seen_property_names.add(sanitized_name)
 
         except Exception as e:
             print(f"Error processing property '{getattr(prop, 'prefLabel', ['Unknown'])[0]}': {e}")
             continue
 
+    return properties, list(set(dependencies))
 
-    return properties, list(set(dependencies))  # Return unique dependencies
 
 
 

@@ -4,17 +4,17 @@ from typing import Optional, List, Union
 
 {% for parent_class in parent_classes if parent_class != "BaseModel" %}
 {% if parent_class in custom_models %}
-from ..custom.{{ parent_class }}Module import {{ parent_class }}
+from ..custom.{{ parent_class }}__{{ prefix }} import {{ parent_class }}
 {% else %}
-from .{{ parent_class }}Module import {{ parent_class }}
+from .{{ parent_class }}__{{ prefix }} import {{ parent_class }}
 {% endif %}
 {% endfor %}
 
 {% for imp in imports %}
 {% if imp in custom_models %}
-from ..custom.{{ imp }}Module import {{ imp }}
+from ..custom.{{ imp }}__{{ prefix }} import {{ imp }}
 {% else %}
-from .{{ imp }}Module import {{ imp }}
+from .{{ imp }}__{{ prefix }} import {{ imp }}
 {% endif %}
 {% endfor %}
 
@@ -66,9 +66,11 @@ class {{ class_name }}({{ ', '.join(parent_classes) }}):
         {% else %}
             None,
         {% endif %}
-        alias="{{ prop.alias if 'alias' in prop else prop.name }}"
+        alias="{% if prop.iri and 'schema.org' in prop.iri %}schema:{{ prop.name }}{% else %}{{ prop.name }}{% endif %}",
+        json_schema_extra={"iri": "{{ prop.iri if prop.iri else '' }}"}
     )
     {% endfor %}
+
 
 
     {% for prop in properties if prop.range not in ["str", "Union[int, float]", "int", "float"] %}

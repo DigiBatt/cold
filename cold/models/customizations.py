@@ -99,5 +99,12 @@ def custom_method(self):
     },
     "ElectrolyteSolution": {
         "exclude_parent_classes": ["Electrolyte"],
-    }
+    },
+    "InsertionElectrode": {
+        "exclude_properties": ["hasInsertedEntity"]
+    },
+    "ParticulateMatter": {
+        "exclude_parent_classes": ["BondedParticle"],
+    },
+    "IGNORE": ["IUPACName"]
 }

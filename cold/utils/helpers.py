@@ -1,31 +1,38 @@
 def extract_label(value):
     """
-    Extract the plain string from a prefLabel or locstr object.
-
-    Args:
-        value: The value to process, which could be a locstr or a plain string.
-
-    Returns:
-        str: The plain string representation.
+    Extract a label from a class or literal-like object.
+    Falls back to the IRI fragment if no label is available.
     """
-    # Check for the '@value' attribute or similar
-    if hasattr(value, 'value'):
-        return getattr(value, 'value')  # Access the 'value' attribute directly
-    # If it's a locstr with dictionary-like behavior
-    if isinstance(value, dict) and '@value' in value:
-        return value['@value']
-    # Otherwise, return the string representation
-    return str(value)
+    try:
+        # If it's a full ontology entity (class or property)
+        if hasattr(value, "prefLabel") and value.prefLabel:
+            return str(value.prefLabel[0])
+        elif hasattr(value, "label") and value.label:
+            return str(value.label[0])
+        elif hasattr(value, "name"):
+            return str(value.name)
+        elif hasattr(value, "iri"):
+            return value.iri.split("#")[-1].split("/")[-1]
+        elif hasattr(value, "value"):
+            return str(value.value)  # owlready2 locstr
+        elif isinstance(value, dict) and "@value" in value:
+            return value["@value"]
+        return str(value)
+    except Exception:
+        return "UnnamedClass"
+
 
 
 def get_prefLabel(cls, else_):
     if hasattr(cls, "prefLabel") and cls.prefLabel:
-        label = cls.prefLabel[0]
-    elif hasattr(cls, "get_preferred_label") and cls.get_preferred_label != None:
-        label = cls.get_preferred_label()
+        return extract_label(cls.prefLabel[0])
+    elif hasattr(cls, "label") and cls.label:
+        return extract_label(cls.label[0])
+    elif hasattr(cls, "get_preferred_label") and cls.get_preferred_label() is not None:
+        return extract_label(cls.get_preferred_label())
     else:
-        label = else_
-    return label
+        return else_
+
 
 from pydantic import create_model, BaseModel
 from typing import Type, List, Optional, Any
@@ -62,3 +69,30 @@ def merge_models(*models: Type[BaseModel], class_name: Optional[str] = None) -> 
 
     # Use the auto-generated name if no custom class_name is provided
     return create_model(class_name or auto_class_name, **fields, __base__=models)
+
+import uuid
+
+def assign_ids(jsonld, base_iri="https://zenodo.org/record/123456789#"):
+    """
+    Recursively assigns a unique @id to each object node in a JSON-LD graph
+    if it doesn't already have one.
+
+    Args:
+        jsonld (dict): The JSON-LD document.
+        base_iri (str): The base IRI to prefix each generated ID (should end with '#').
+
+    Returns:
+        dict: The updated JSON-LD document with @id fields.
+    """
+
+    def process_node(node):
+        if isinstance(node, dict):
+            if "@type" in node and "@id" not in node:
+                node["@id"] = f"{base_iri}uuid-{uuid.uuid4()}"
+            for key, value in node.items():
+                node[key] = process_node(value)
+        elif isinstance(node, list):
+            return [process_node(item) for item in node]
+        return node
+
+    return process_node(jsonld)

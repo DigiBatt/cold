@@ -1,8 +1,13 @@
 {
-    "emmo_battery": {
+    "battery": {
         "url": "https://emmo-repo.github.io/domain-battery/battery-inferred.ttl",
         "original_file_name": "emmo_battery.ttl",
         "formatted_file_name": "emmo_battery_formatted.ttl"
+    },
+    "schema": {
+        "url": "https://schema.org/version/latest/schemaorg-current-https.ttl",
+        "original_file_name": "schema.ttl",
+        "formatted_file_name": "schema_formatted.ttl"
     }
         
     }
