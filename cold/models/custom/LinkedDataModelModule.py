@@ -40,13 +40,20 @@ class LinkedDataModel(BaseModel):
             if hasattr(model_field, "json_schema_extra") and model_field.json_schema_extra:
                 iri = model_field.json_schema_extra.get("iri")
 
+            # 1. Handle internal EMMO properties
+            if iri and "https://w3id.org/emmo" in iri:
+                # fallback to clean field_name
+                return field_name
+
+            # 2. Handle known namespace properties (schema.org etc.)
             if iri:
                 for namespace, prefix in NAMESPACE_PREFIXES.items():
                     if iri.startswith(namespace):
                         suffix = iri.replace(namespace, "")
                         return f"{prefix}:{suffix}" if prefix else suffix
 
-        return field_name  # fallback if no known IRI or prefix
+        # 3. Fallback: use field name as is
+        return field_name
 
 
     def to_jsonld(self, include_context=True) -> dict:

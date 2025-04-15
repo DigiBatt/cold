@@ -129,13 +129,13 @@ def format_ontology(input_turtle, output_turtle):
         if (s, RDF.type, OWLNS.Class) in updated or (s, RDF.type, OWLNS.ObjectProperty) in updated:
             updated.add((s, SKOSNS.prefLabel, Literal(get_fragment(str(s)))))
 
-    print("Removing circular imports from restrictions...")
-    cycles_removed = find_and_remove_cycles(updated)
-    print(f"→ Removed {cycles_removed} triples.")
+    #print("Removing circular imports from restrictions...")
+    #cycles_removed = find_and_remove_cycles(updated)
+    #print(f"→ Removed {cycles_removed} triples.")
 
-    print("Enforcing single inheritance to prevent MRO issues...")
-    mro_removed = enforce_single_inheritance(updated)
-    print(f"→ Removed {mro_removed} subclass relations.")
+    #print("Enforcing single inheritance to prevent MRO issues...")
+    #mro_removed = enforce_single_inheritance(updated)
+    #print(f"→ Removed {mro_removed} subclass relations.")
 
     updated.serialize(destination=output_turtle, format="turtle")
     print(f"Turtle file saved to: {output_turtle}")

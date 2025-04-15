@@ -4,6 +4,7 @@ customizations = {
         "properties": [
             {"name": "extra_property", "range": "str", "alias": "extraProperty", "default": "None"}
         ],
+        "exclude_properties": ["hasPart"],
         "methods": [
             """
 def custom_method(self):
@@ -38,8 +39,8 @@ def custom_method(self):
     "Property": {
         "imports": [],
         "properties": [
-            {"name": "hasNumericalPart", "range": "NumericalPart", "alias": "hasNumericalPart"},
-            {"name": "hasMeasurementUnit", "range": "MeasurementUnit", "alias": "hasMeasurementUnit"}
+            {"name": "hasNumericalPart", "range": "NumericalPart", "alias": "hasNumericalPart", "iri": "https://w3id.org/emmo#EMMO_8ef3cd6d_ae58_4a8d_9fc0_ad8f49015cd0"},
+            {"name": "hasMeasurementUnit", "range": "MeasurementUnit", "alias": "hasMeasurementUnit", "iri": "https://w3id.org/emmo#EMMO_bed1d005_b04e_4a90_94cf_02bc678a8569"}
         ],
         "methods": [
             """
@@ -104,10 +105,34 @@ def custom_method(self):
         "exclude_properties": ["hasInsertedEntity"]
     },
     "ParticulateMatter": {
-        "exclude_parent_classes": ["BondedParticle"],
+        "exclude_parent_classes": ["BondedParticle"]
+    },
+    "MolecularEntity": {
+        "exclude_parent_classes": ["ParticulateMatter"]
+    },
+    "Solute": {
+        "exclude_object_properties": ["isComponentOf"]
+    },
+    "Solvent": {
+        "exclude_object_properties": ["isComponentOf"]
+    },
+    "PhysicsBasedModel": {
+        "exclude_object_properties": ["hasSpatialPart"]
+    },
+    "StoichiometricEquation": {
+        "exclude_parent_classes": ["MathematicalConstruct"]
+    },
+    "PhysicsEquation": {
+        "exclude_parent_classes": ["PhysicsBasedModel"]
+    },
+    "Mixture": {
+        "exclude_parent_classes": ["Object"]
     },
     "Fluid": {
-        "exclude_parent_classes": ["StateOfMatter"],
+        "exclude_parent_classes": ["StateOfMatter"]
     },
-    "IGNORE": ["IUPACName", "AngularWavenumber", "FermiAngularWaveNumber"]
+    "Solid": {
+        "exclude_parent_classes": ["CondensedMatter"]
+    },
+    "IGNORE": ["IUPACName", "AngularWavenumber", "AngularWaveNumber", "FermiAnglularWaveNumber", "DebyeAngularWaveNumber"]
 }
