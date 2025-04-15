@@ -23,9 +23,15 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
     custom_models = ["LinkedDataModel", "NumericalPart"]  # Define your custom models here
     os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
     generated_classes = []  # Keep track of all generated class names and sanitized names
+    ignore_classes = set(customizations.get("IGNORE", []))
+
 
     # Generate explicitly defined top-level classes in customizations
     for class_name, customization in customizations.items():
+        
+        if class_name == "IGNORE":
+            continue  # Skip IGNORE entry, it's not a real class
+
         context = {
             "class_name": class_name,
             "properties": customization.get("properties", []),
@@ -53,6 +59,12 @@ def generate_pydantic_classes(classes, template_path, output_dir, max_classes=No
         try:
             raw_pref_label = cls.prefLabel[0] if hasattr(cls, "prefLabel") and cls.prefLabel else None
             class_name = extract_label(raw_pref_label) if raw_pref_label else "UnnamedClass"
+
+             # Skip ignored classes
+            if class_name in ignore_classes:
+                print(f"[Customizations] Skipping ignored class: {class_name}")
+                continue
+
             sanitized_name = sanitize_module_name(class_name)
 
             # Extract properties with knowledge of parent classes
@@ -165,6 +177,13 @@ def apply_customizations(class_name, context):
         auto_properties = {prop["name"]: prop for prop in context.get("properties", [])}
         merged_properties = {**auto_properties, **custom_properties}  # Custom properties take precedence
         context["properties"] = list(merged_properties.values())
+
+        # Remove object properties excluded by customization
+        excluded_object_properties = set(custom.get("exclude_object_properties", []))
+        context["properties"] = [
+            prop for prop in context["properties"]
+            if prop["name"] not in excluded_object_properties
+        ]
 
         # Handle instantiated_defaults
         instantiated_defaults = custom.get("instantiated_defaults", [])

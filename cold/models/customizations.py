@@ -99,5 +99,39 @@ def custom_method(self):
     },
     "ElectrolyteSolution": {
         "exclude_parent_classes": ["Electrolyte"],
-    }
+    },
+    "InsertionElectrode": {
+        "exclude_properties": ["hasInsertedEntity"]
+    },
+    "ParticulateMatter": {
+        "exclude_parent_classes": ["BondedParticle"]
+    },
+    "MolecularEntity": {
+        "exclude_parent_classes": ["ParticulateMatter"]
+    },
+    "Solute": {
+        "exclude_object_properties": ["isComponentOf"]
+    },
+    "Solvent": {
+        "exclude_object_properties": ["isComponentOf"]
+    },
+    "PhysicsBasedModel": {
+        "exclude_object_properties": ["hasSpatialPart"]
+    },
+    "StoichiometricEquation": {
+        "exclude_parent_classes": ["MathematicalConstruct"]
+    },
+    "PhysicsEquation": {
+        "exclude_parent_classes": ["PhysicsBasedModel"]
+    },
+    "Mixture": {
+        "exclude_parent_classes": ["Object"]
+    },
+    "Fluid": {
+        "exclude_parent_classes": ["StateOfMatter"]
+    },
+    "Solid": {
+        "exclude_parent_classes": ["CondensedMatter"]
+    },
+    "IGNORE": ["IUPACName", "AngularWavenumber", "AngularWaveNumber", "FermiAnglularWaveNumber", "DebyeAngularWaveNumber"]
 }
