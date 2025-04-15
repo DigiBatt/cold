@@ -1,77 +1,141 @@
-from rdflib import Graph, Namespace, RDF, RDFS, SKOS, OWL, Literal, BNode
-from urllib.parse import urlparse
+from rdflib import Graph, Namespace, RDF, RDFS, SKOS, OWL, Literal, BNode, URIRef
+
 
 def get_fragment(uri):
     """Extract the fragment from a URI (after # or last /)."""
     return uri.split("#")[-1] if "#" in uri else uri.rsplit("/", 1)[-1]
 
-def format_ontology(input_turtle, output_turtle):
-    """
-    Normalize a Turtle file to align with EMMO-style conventions:
-    - Promote rdfs:Class → owl:Class
-    - Promote rdf:Property → owl:ObjectProperty
-    - Replace rdfs:label → skos:prefLabel
-    - Convert schema:domainIncludes → rdfs:domain
-    - Convert schema:rangeIncludes → rdfs:range
-    - Add skos:prefLabel based on IRI if missing
-    - Add owl:Restriction axioms linking properties to classes via rdfs:subClassOf
-    """
+
+def load_graph(filepath):
     g = Graph()
-    g.parse(input_turtle, format="turtle")
+    g.parse(filepath, format="turtle")
+    return g
+
+
+def get_superclasses(graph, cls):
+    """Recursively get all superclasses of a class"""
+    supers = set()
+    queue = [cls]
+    while queue:
+        current = queue.pop()
+        for s in graph.objects(current, RDFS.subClassOf):
+            if isinstance(s, URIRef) and s not in supers:
+                supers.add(s)
+                queue.append(s)
+    return supers
+
+
+def find_and_remove_cycles(graph):
+    """Detect and remove circular subclass relations caused by owl:Restrictions."""
+    to_remove = []
+
+    for s in graph.subjects(RDFS.subClassOf, None):
+        for restriction in graph.objects(s, RDFS.subClassOf):
+            if (restriction, RDF.type, OWL.Restriction) not in graph:
+                continue
+
+            prop = graph.value(restriction, OWL.onProperty)
+            target = graph.value(restriction, OWL.someValuesFrom)
+
+            if not (prop and target):
+                continue
+
+            supers = get_superclasses(graph, target)
+
+            if s in supers:
+                print(f"Detected circular dependency via property {prop}")
+                print(f"→ {s} --[{prop}]--> {target} subclassOf* {s}")
+                to_remove.append((s, RDFS.subClassOf, restriction))
+
+    for triple in to_remove:
+        print(f"Removing triple: {triple}")
+        graph.remove(triple)
+
+    return len(to_remove)
+
+
+def enforce_single_inheritance(graph):
+    """Ensure each class has only one non-restriction parent."""
+    to_remove = []
+
+    for cls in set(graph.subjects(RDF.type, OWL.Class)):
+        parents = list(graph.objects(cls, RDFS.subClassOf))
+
+        # Keep restrictions
+        real_parents = [
+            p for p in parents
+            if isinstance(p, URIRef) and (p, RDF.type, OWL.Class) in graph
+        ]
+
+        if len(real_parents) > 1:
+            print(f"⚠️  Enforcing single inheritance: {cls} has multiple parents: {real_parents}")
+            for bad_parent in real_parents[1:]:
+                print(f"→ Removing: {cls} subClassOf {bad_parent}")
+                to_remove.append((cls, RDFS.subClassOf, bad_parent))
+
+    for triple in to_remove:
+        graph.remove(triple)
+
+    return len(to_remove)
+
+
+def format_ontology(input_turtle, output_turtle):
+    """Clean and normalize Turtle ontology for safe Pydantic class generation."""
+    g = load_graph(input_turtle)
 
     SCHEMA = Namespace("https://schema.org/")
-    SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
+    SKOSNS = Namespace("http://www.w3.org/2004/02/skos/core#")
     OWLNS = Namespace("http://www.w3.org/2002/07/owl#")
 
-    updated_graph = Graph()
-    updated_graph.bind("schema", SCHEMA)
-    updated_graph.bind("skos", SKOS)
-    updated_graph.bind("owl", OWLNS)
-    updated_graph.bind("rdfs", RDFS)
-    updated_graph.bind("rdf", RDF)
+    updated = Graph()
+    updated.bind("schema", SCHEMA)
+    updated.bind("skos", SKOSNS)
+    updated.bind("owl", OWLNS)
+    updated.bind("rdfs", RDFS)
+    updated.bind("rdf", RDF)
 
-    # Map to store domain and range triples temporarily
     property_domains = {}
     property_ranges = {}
 
-    # First pass: Normalize and collect schema.org-style domain/range
-    for subj, pred, obj in g:
-        if pred == RDF.type and obj == RDFS.Class:
-            updated_graph.add((subj, RDF.type, OWLNS.Class))
-        elif pred == RDF.type and obj == RDF.Property:
-            updated_graph.add((subj, RDF.type, OWLNS.ObjectProperty))
-        elif pred == RDFS.label:
-            updated_graph.add((subj, SKOS.prefLabel, obj))
-        elif str(pred) == "https://schema.org/domainIncludes":
-            updated_graph.add((subj, RDFS.domain, obj))
-            property_domains.setdefault(subj, set()).add(obj)
-        elif str(pred) == "https://schema.org/rangeIncludes":
-            updated_graph.add((subj, RDFS.range, obj))
-            property_ranges.setdefault(subj, set()).add(obj)
+    for s, p, o in g:
+        if (p, o) == (RDF.type, RDFS.Class):
+            updated.add((s, RDF.type, OWLNS.Class))
+        elif (p, o) == (RDF.type, RDF.Property):
+            updated.add((s, RDF.type, OWLNS.ObjectProperty))
+        elif p == RDFS.label:
+            updated.add((s, SKOSNS.prefLabel, o))
+        elif str(p) == "https://schema.org/domainIncludes":
+            updated.add((s, RDFS.domain, o))
+            property_domains.setdefault(s, set()).add(o)
+        elif str(p) == "https://schema.org/rangeIncludes":
+            updated.add((s, RDFS.range, o))
+            property_ranges.setdefault(s, set()).add(o)
         else:
-            updated_graph.add((subj, pred, obj))
+            updated.add((s, p, o))
 
-    # Add owl:Restrictions for each domain/range pair
     for prop, domains in property_domains.items():
         ranges = property_ranges.get(prop, [])
-        for domain in domains:
-            for range_ in ranges:
+        for d in domains:
+            for r in ranges:
                 restriction = BNode()
-                updated_graph.add((domain, RDFS.subClassOf, restriction))
-                updated_graph.add((restriction, RDF.type, OWLNS.Restriction))
-                updated_graph.add((restriction, OWLNS.onProperty, prop))
-                updated_graph.add((restriction, OWLNS.someValuesFrom, range_))
+                updated.add((d, RDFS.subClassOf, restriction))
+                updated.add((restriction, RDF.type, OWLNS.Restriction))
+                updated.add((restriction, OWLNS.onProperty, prop))
+                updated.add((restriction, OWLNS.someValuesFrom, r))
 
-    # Add missing skos:prefLabel
-    for subj in set(updated_graph.subjects()):
-        has_label = any(pred in [RDFS.label, SKOS.prefLabel] for pred in updated_graph.predicates(subject=subj))
-        is_class_or_prop = (
-            (subj, RDF.type, OWLNS.Class) in updated_graph or
-            (subj, RDF.type, OWLNS.ObjectProperty) in updated_graph
-        )
-        if is_class_or_prop and not has_label:
-            label = get_fragment(str(subj))
-            updated_graph.add((subj, SKOS.prefLabel, Literal(label)))
+    for s in set(updated.subjects()):
+        if any(p in [RDFS.label, SKOSNS.prefLabel] for p in updated.predicates(subject=s)):
+            continue
+        if (s, RDF.type, OWLNS.Class) in updated or (s, RDF.type, OWLNS.ObjectProperty) in updated:
+            updated.add((s, SKOSNS.prefLabel, Literal(get_fragment(str(s)))))
 
-    updated_graph.serialize(destination=output_turtle, format="turtle")
-    print(f"Updated Turtle file saved to: {output_turtle}")
+    print("Removing circular imports from restrictions...")
+    cycles_removed = find_and_remove_cycles(updated)
+    print(f"→ Removed {cycles_removed} triples.")
+
+    print("Enforcing single inheritance to prevent MRO issues...")
+    mro_removed = enforce_single_inheritance(updated)
+    print(f"→ Removed {mro_removed} subclass relations.")
+
+    updated.serialize(destination=output_turtle, format="turtle")
+    print(f"Turtle file saved to: {output_turtle}")
