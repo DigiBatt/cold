@@ -1,6 +1,5 @@
 import cold  # <- imports your whole package properly
 import cold.utils.helpers as helpers
-from pydantic import ValidationError
 import json
 
 

@@ -29,7 +29,16 @@ def generate_pydantic_classes(class_prefix_pairs, template_path, output_dir, max
         try:
             properties, dependencies = extract_properties(cls)
 
-            if class_name == "EMMO":
+            # Always add class_name explicitly as a field
+            properties.append({
+                "name": "class_name",
+                "range": "str",
+                "iri": None,
+                "default": f'"{class_name}"',
+            })
+
+
+            if class_name in {"EMMO", "Thing"}:
                 dependencies = []
                 normalized_deps = {dep.replace("Module", "") for dep in dependencies}
                 properties = [prop for prop in properties if prop["range"] not in normalized_deps]
@@ -37,6 +46,10 @@ def generate_pydantic_classes(class_prefix_pairs, template_path, output_dir, max
             custom = customizations.get(class_name, {})
             excluded_props = set(custom.get("exclude_properties", []))
             properties = [p for p in properties if p["name"] not in excluded_props]
+
+            has_self_reference = any(p["range"] == class_name for p in properties)
+            has_circular_import = any(p["range"] in [c for c, *_ in class_prefix_pairs] for p in properties)
+
 
             context = {
                 "class_name": class_name,
@@ -46,6 +59,8 @@ def generate_pydantic_classes(class_prefix_pairs, template_path, output_dir, max
                 "custom_models": custom_models,
                 "imports": dependencies,
                 "additional_imports": custom.get("imports", []),
+                "has_self_reference": has_self_reference,
+                "has_circular_import": has_circular_import,
             }
 
             context = apply_customizations(class_name, context)
@@ -80,7 +95,7 @@ def apply_customizations(class_name, context):
         return context
     custom = customizations[class_name]
 
-    if class_name == "EMMO":
+    if class_name in {"EMMO", "Thing"}:
         context["parent_classes"] = ["LinkedDataModel"]
     else:
         for parent in custom.get("parent_classes", []):

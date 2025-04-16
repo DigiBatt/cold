@@ -134,5 +134,8 @@ def custom_method(self):
     "Solid": {
         "exclude_parent_classes": ["CondensedMatter"]
     },
+    "Thing": {
+        "imports": [ ]
+    },
     "IGNORE": ["IUPACName", "AngularWavenumber", "AngularWaveNumber", "FermiAnglularWaveNumber", "DebyeAngularWaveNumber"]
 }
