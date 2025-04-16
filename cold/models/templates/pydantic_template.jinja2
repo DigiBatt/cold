@@ -1,7 +1,10 @@
 {% set imports = properties | map(attribute="range") | unique | reject("equalto", "str") | reject("equalto", None) | list %}
 
-from pydantic import BaseModel, Field, validator, root_validator
-from typing import Optional, List, Union
+from __future__ import annotations
+from typing import Optional, List, Union{% if imports %}, TYPE_CHECKING{% endif %}
+from pydantic import BaseModel, Field
+
+from cold.models.custom.LinkedDataModelModule import LinkedDataModel
 
 {% for parent_class in parent_classes if parent_class != "BaseModel" %}
 {% if parent_class in custom_models %}
@@ -11,14 +14,16 @@ from .{{ parent_class }}Module import {{ parent_class }}
 {% endif %}
 {% endfor %}
 
+{% if imports %}
+if TYPE_CHECKING:
 {% for imp in imports %}
 {% if imp in custom_models %}
-from cold.models.custom.{{ imp }}Module import {{ imp }}
+    from cold.models.custom.{{ imp }}Module import {{ imp }}
 {% else %}
-from .{{ imp }}Module import {{ imp }}
+    from .{{ imp }}Module import {{ imp }}
 {% endif %}
 {% endfor %}
-
+{% endif %}
 
 {% if additional_imports %}
 # Custom imports
@@ -36,68 +41,29 @@ class {{ class_name }}({{ ', '.join(parent_classes) }}):
     This class defines the following attributes:
     {% if properties %}
     {% for prop in properties %}
-    - `{{ prop.name }}` (`Optional[{{ prop.range }}]`): 
-        - **Default Value**: `{{ prop.default if 'default' in prop else 'None' }}`
-        - **Alias**: `{{ prop.alias if 'alias' in prop else prop.name }}`
+    - `{{ prop.name }}` (`Optional[{{ prop.range }}]`)
     {% endfor %}
     {% endif %}
-
-    Validators are used to ensure that the attributes meet the necessary criteria. These validations are implemented as class methods using Pydantic's `@validator` decorator.
-
-    Example usage:
-    ```python
-    obj = {{ class_name }}(
-    {% for prop in properties %}
-    {{ prop.name }}={{ prop.default if 'default' in prop else '"example_value"' }},
-    {% endfor %}
-    )
-    ```
-
-    Methods:
-    - The class may include custom validation and transformation methods as needed.
     """
     class Config:
         arbitrary_types_allowed = True
         populate_by_name = True
         validate_assignment = True
 
-    {% if properties %}
     {% for prop in properties %}
-    {{ prop.name }}: Optional[Union[{{ prop.range }}, List[{{ prop.range }}]]] = Field(
-        {% if prop.default %}
-            {{ prop.default }},
-        {% else %}
-            None,
-        {% endif %}
-        alias="{% if prop.iri and 'schema.org' in prop.iri %}schema:{{ prop.name }}{% else %}{{ prop.name }}{% endif %}",
-        json_schema_extra={"iri": "{{ prop.iri if prop.iri else '' }}"}
+    {{ prop.name }}: Optional[
+        Union[
+            List[Union[{{ prop.range }}]],
+            {{ prop.range }}
+        ]
+    ] = Field(
+        default=None,
+        {% if prop.description %}description="{{ prop.description | escape }}",{% endif %}
+        {% if prop.iri %}json_schema_extra={"iri": "{{ prop.iri }}"},{% endif %}
+        alias="{% if prop.iri and 'schema.org' in prop.iri %}schema:{{ prop.name }}{% else %}{{ prop.name }}{% endif %}"
     )
     {% endfor %}
 
-
-
-    {% for prop in properties if prop.range not in ["str", "Union[int, float]", "int", "float"] %}
-    @validator("{{ prop.name }}", pre=False, always=True)
-    def validate_{{ prop.name }}(cls, value):
-        if value is None:
-            return value
-        if isinstance(value, list):
-            for item in value:
-                if not isinstance(item, {{ prop.range }}):
-                    raise ValueError(f"Each item in '{{ prop.name }}' must be an instance of '{{ prop.range }}'.")
-            return value
-        if isinstance(value, {{ prop.range }}):
-            return value
-        raise ValueError(f"Field '{{ prop.name }}' must be '{{ prop.range }}' or a list of '{{ prop.range }}' instances.")
-    {% endfor %}
-    {% endif %}
-
-    {% if methods %}
-    {% for method in methods %}
-    {{ method | safe }}
-    {% endfor %}
-    {% endif %}
-
-    {% if not properties and not methods %}
+    {% if not properties %}
     pass
     {% endif %}
