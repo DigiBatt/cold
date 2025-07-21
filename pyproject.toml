@@ -9,7 +9,7 @@ description = "A Python package for working with battery ontologies."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "pydantic>=2.0,<3",
+    "pydantic>=2.0,<3", # pydantic 1.9 causes Method Resolution Order (MRO) errors; must use 2.x
     "jinja2>=3.1,<4",
     "rdflib>=6.0,<7",
     "requests>=2.31,<3",
