@@ -31,7 +31,15 @@ Since `cold` is not yet available on PyPI, you need to clone the repository and 
 
    This allows you to use `cold` while making changes to its source code.
 
-5. **Verify Installation**  
+5. **Autogenerate python classes**  
+
+   This uses pydantic to create python classes from the ontology models.
+   This needs doing the first time you install cold, and whenever the ontology models change.
+   .. code-block:: sh
+
+      python  cold/scripts/regenerate_models.py
+
+6. **Verify Installation**  
 
    .. code-block:: python
 
