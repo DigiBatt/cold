@@ -13,24 +13,13 @@ COLD is a Python package for generating and validating battery-related linked da
 
 ## Usage
 
+- Documentation on how to install and get started can be found here: [https://digibatt.github.io/cold/](https://digibatt.github.io/cold/)
+
 ## Roadmap
 
 - Enhanced Ontology Support: Expanding compatibility with more battery domain ontologies.  
 - Improved Validation Features: More detailed error reporting and schema checking.  
 - Extended Metadata Handling: Support for additional battery test data types.  
-
-## Installation
-- Navigate to repository  install using 
-`pip install -e . `
-
-## Autogenerating python classes
-- Before running for the first time, and every time the ontology changes you need to regenerate the python classes for each item.
-`python ./cold/scripts/regenerate_models.py`
-
-## Examples
-
-- The examples directory contains scripts for common example models. 
-- e.g. creating a json-LD model for a CR2032 cell. [./cold/examples/scripts/example_cr2032.py](./cold/examples/scripts/example_cr2032.py)
 
 ## Contributing
 
