@@ -13,6 +13,8 @@ COLD is a Python package for generating and validating battery-related linked da
 
 ## Usage
 
+- Documentation on how to install and get started can be found here: [https://digibatt.github.io/cold/](https://digibatt.github.io/cold/)
+
 ## Roadmap
 
 - Enhanced Ontology Support: Expanding compatibility with more battery domain ontologies.  
