@@ -30,4 +30,10 @@ Contributions are welcome! To contribute:
 3. Commit your changes  
 4. Push to your branch and create a pull request  
 
-## License
+### Acknowledgements
+
+<img src="docs/assets/img/Flag_of_Europe.png" alt="EU-Flag" width="100">
+
+This project has received support from European Union research and innovation programs, under grant agreement numbers:
+
+* [101103997 - DigiBatt](https://digibattproject.eu/)
